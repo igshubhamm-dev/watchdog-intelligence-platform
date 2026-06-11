@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+python-dotenv
+pydantic
+jinja2
+openai
+requests
+beautifulsoup4
+feedparser
+playwright

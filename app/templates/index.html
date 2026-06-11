@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WATCHDOG Intelligence</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        :root{
+            --bg:#0F172A;
+            --panel:#111827;
+            --card:#1E293B;
+            --card-soft:#172033;
+            --border:#334155;
+            --accent:#3B82F6;
+            --success:#22C55E;
+            --warning:#F59E0B;
+            --danger:#EF4444;
+            --text:#F8FAFC;
+            --muted:#94A3B8;
+            --shadow:0 18px 45px rgba(0,0,0,0.28);
+        }
+
+        *{
+            box-sizing:border-box;
+        }
+
+        body{
+            font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at 20% 0%, rgba(59,130,246,0.14), transparent 28%),
+                linear-gradient(180deg, #111827 0%, var(--bg) 38%);
+            color:var(--text);
+            margin:0;
+            min-height:100vh;
+            padding:32px;
+        }
+
+        a{
+            color:#93C5FD;
+            text-decoration:none;
+        }
+
+        a:hover{
+            color:#BFDBFE;
+            text-decoration:underline;
+        }
+
+        .container{
+            max-width:1440px;
+            margin:0 auto;
+        }
+
+        .header{
+            display:flex;
+            align-items:flex-end;
+            justify-content:space-between;
+            gap:24px;
+            margin-bottom:24px;
+        }
+
+        .eyebrow{
+            color:var(--accent);
+            font-size:12px;
+            font-weight:800;
+            letter-spacing:0;
+            margin:0 0 8px;
+            text-transform:uppercase;
+        }
+
+        h1{
+            font-size:34px;
+            line-height:1.15;
+            margin:0;
+        }
+
+        .subtitle{
+            color:var(--muted);
+            margin:8px 0 0;
+            max-width:660px;
+        }
+
+        .search-panel{
+            background:rgba(30,41,59,0.72);
+            border:1px solid var(--border);
+            border-radius:8px;
+            box-shadow:var(--shadow);
+            margin-bottom:24px;
+            padding:16px;
+        }
+
+        .search-box{
+            display:flex;
+            gap:12px;
+        }
+
+        input{
+            background:#0B1220;
+            border:1px solid var(--border);
+            border-radius:8px;
+            color:var(--text);
+            flex:1;
+            font-size:16px;
+            min-width:0;
+            outline:none;
+            padding:15px 16px;
+        }
+
+        input:focus{
+            border-color:var(--accent);
+            box-shadow:0 0 0 3px rgba(59,130,246,0.22);
+        }
+
+        input::placeholder{
+            color:#64748B;
+        }
+
+        button{
+            align-items:center;
+            background:var(--accent);
+            border:1px solid rgba(255,255,255,0.08);
+            border-radius:8px;
+            color:white;
+            cursor:pointer;
+            display:inline-flex;
+            font-size:15px;
+            font-weight:800;
+            gap:9px;
+            justify-content:center;
+            min-width:132px;
+            padding:15px 22px;
+            transition:background 150ms ease, transform 150ms ease;
+        }
+
+        button:hover{
+            background:#2563EB;
+            transform:translateY(-1px);
+        }
+
+        button:disabled{
+            cursor:not-allowed;
+            opacity:0.72;
+            transform:none;
+        }
+
+        .snapshot-grid{
+            display:grid;
+            gap:16px;
+            grid-template-columns:1fr 1fr;
+            margin-bottom:24px;
+        }
+
+        .card{
+            background:linear-gradient(180deg, rgba(30,41,59,0.98), rgba(23,32,51,0.98));
+            border:1px solid var(--border);
+            border-radius:8px;
+            box-shadow:var(--shadow);
+            min-width:0;
+            padding:20px;
+        }
+
+        .card-header{
+            align-items:center;
+            display:flex;
+            gap:12px;
+            margin-bottom:16px;
+        }
+
+        .card-icon{
+            align-items:center;
+            background:rgba(59,130,246,0.16);
+            border:1px solid rgba(59,130,246,0.36);
+            border-radius:8px;
+            color:#BFDBFE;
+            display:inline-flex;
+            flex:0 0 34px;
+            font-size:12px;
+            font-weight:900;
+            height:34px;
+            justify-content:center;
+            line-height:1;
+            width:34px;
+        }
+
+        .card-title{
+            font-size:15px;
+            font-weight:900;
+            margin:0;
+        }
+
+        .card-kicker{
+            color:var(--muted);
+            font-size:12px;
+            margin:3px 0 0;
+        }
+
+        .dashboard-grid{
+            display:grid;
+            gap:18px;
+            grid-template-columns:repeat(2, minmax(0, 1fr));
+        }
+
+        .hero-card{
+            min-height:360px;
+        }
+
+        .span-2{
+            grid-column:span 2;
+        }
+
+        .brief-body{
+            color:#E2E8F0;
+            font-size:15px;
+            line-height:1.75;
+            margin:0;
+            white-space:pre-wrap;
+        }
+
+        .overview-list{
+            display:grid;
+            gap:14px;
+            margin:0;
+        }
+
+        .field-label{
+            color:var(--muted);
+            display:block;
+            font-size:12px;
+            font-weight:800;
+            margin-bottom:4px;
+            text-transform:uppercase;
+        }
+
+        .field-value{
+            color:#E2E8F0;
+            line-height:1.55;
+            overflow-wrap:anywhere;
+        }
+
+        .item-list{
+            display:grid;
+            gap:10px;
+            list-style:none;
+            margin:0;
+            padding:0;
+        }
+
+        .item{
+            background:rgba(15,23,42,0.46);
+            border:1px solid rgba(51,65,85,0.72);
+            border-radius:8px;
+            color:#E2E8F0;
+            line-height:1.45;
+            padding:11px 12px;
+        }
+
+        .item-title{
+            color:var(--text);
+            display:block;
+            font-weight:800;
+            overflow-wrap:anywhere;
+        }
+
+        .item-meta{
+            color:var(--muted);
+            display:block;
+            font-size:13px;
+            margin-top:3px;
+            overflow-wrap:anywhere;
+        }
+
+        .empty{
+            align-items:center;
+            background:rgba(15,23,42,0.38);
+            border:1px dashed rgba(148,163,184,0.35);
+            border-radius:8px;
+            color:var(--muted);
+            display:flex;
+            min-height:86px;
+            padding:18px;
+        }
+
+        .error{
+            border-color:rgba(239,68,68,0.52);
+        }
+
+        .error .card-icon{
+            background:rgba(239,68,68,0.16);
+            border-color:rgba(239,68,68,0.36);
+            color:#FCA5A5;
+        }
+
+        .status-pill{
+            align-items:center;
+            background:rgba(34,197,94,0.12);
+            border:1px solid rgba(34,197,94,0.28);
+            border-radius:999px;
+            color:#BBF7D0;
+            display:inline-flex;
+            font-size:12px;
+            font-weight:800;
+            gap:8px;
+            padding:8px 12px;
+            white-space:nowrap;
+        }
+
+        .status-dot{
+            background:var(--success);
+            border-radius:999px;
+            box-shadow:0 0 0 4px rgba(34,197,94,0.12);
+            height:8px;
+            width:8px;
+        }
+
+        .loading-panel{
+            background:rgba(30,41,59,0.88);
+            border:1px solid var(--border);
+            border-radius:8px;
+            box-shadow:var(--shadow);
+            display:none;
+            margin-bottom:24px;
+            padding:18px;
+        }
+
+        .loading-row{
+            align-items:center;
+            display:flex;
+            gap:14px;
+        }
+
+        .spinner{
+            animation:spin 850ms linear infinite;
+            border:3px solid rgba(148,163,184,0.28);
+            border-top-color:var(--accent);
+            border-radius:50%;
+            height:30px;
+            width:30px;
+        }
+
+        .loading-title{
+            font-weight:900;
+            margin:0;
+        }
+
+        .loading-message{
+            color:var(--muted);
+            margin:4px 0 0;
+        }
+
+        .progress-track{
+            background:#0B1220;
+            border-radius:999px;
+            height:7px;
+            margin-top:16px;
+            overflow:hidden;
+        }
+
+        .progress-bar{
+            background:linear-gradient(90deg, var(--accent), #60A5FA);
+            border-radius:999px;
+            height:100%;
+            transition:width 280ms ease;
+            width:8%;
+        }
+
+        .tech-list{
+            color:#E2E8F0;
+            display:flex;
+            flex-wrap:wrap;
+            gap:9px;
+            line-height:1.7;
+        }
+
+        .tech-chip{
+            align-items:center;
+            background:rgba(59,130,246,0.11);
+            border:1px solid rgba(59,130,246,0.28);
+            border-radius:999px;
+            color:#DBEAFE;
+            display:inline-flex;
+            font-size:13px;
+            font-weight:800;
+            padding:7px 11px;
+        }
+
+        .tech-chip::before{
+            background:#93C5FD;
+            border-radius:999px;
+            content:"";
+            display:inline-block;
+            height:5px;
+            margin-right:8px;
+            width:5px;
+        }
+
+        .signal-table{
+            border-collapse:collapse;
+            width:100%;
+        }
+
+        .signal-table th,
+        .signal-table td{
+            border-bottom:1px solid rgba(51,65,85,0.72);
+            padding:10px 8px;
+            text-align:left;
+            vertical-align:top;
+        }
+
+        .signal-table th{
+            color:var(--muted);
+            font-size:12px;
+            text-transform:uppercase;
+        }
+
+        .signal-table td{
+            color:#E2E8F0;
+            line-height:1.45;
+        }
+
+        .table-wrap{
+            overflow-x:auto;
+            width:100%;
+        }
+
+        .hidden{
+            display:none;
+        }
+
+        @keyframes spin{
+            to{
+                transform:rotate(360deg);
+            }
+        }
+
+        @media (max-width:980px){
+            body{
+                padding:22px;
+            }
+
+            .header{
+                align-items:flex-start;
+                flex-direction:column;
+            }
+
+            .snapshot-grid,
+            .dashboard-grid{
+                grid-template-columns:1fr;
+            }
+
+            .span-2{
+                grid-column:auto;
+            }
+
+            .hero-card{
+                min-height:0;
+            }
+        }
+
+        @media (max-width:640px){
+            body{
+                padding:16px;
+            }
+
+            h1{
+                font-size:27px;
+            }
+
+            .search-box{
+                flex-direction:column;
+            }
+
+            button{
+                width:100%;
+            }
+
+            .card,
+            .search-panel,
+            .loading-panel{
+                padding:16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="header">
+        <div>
+            <p class="eyebrow">Competitive Intelligence</p>
+            <h1>WATCHDOG Intelligence Dashboard</h1>
+            <p class="subtitle">Live company signals, executive briefings, and market movements in one demo-ready view.</p>
+        </div>
+
+        <div class="status-pill">
+            <span class="status-dot"></span>
+            Demo Ready
+        </div>
+    </div>
+
+    <div class="search-panel">
+        <div class="search-box">
+            <input
+                type="text"
+                id="companyUrl"
+                placeholder="https://figma.com"
+            >
+
+            <button id="analyzeButton" onclick="analyzeCompany()">
+                <span>AN</span>
+                Analyze
+            </button>
+        </div>
+    </div>
+
+    <div class="snapshot-grid">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">TC</span>
+                <div>
+                    <h2 class="card-title">Tracked Companies</h2>
+                    <p class="card-kicker">Companies already stored in the database</p>
+                </div>
+            </div>
+
+            {% if companies %}
+            <ul class="item-list">
+                {% for company in companies[:8] %}
+                <li class="item">
+                    <span class="item-title">{{ company.name or company.url }}</span>
+                    <span class="item-meta">{{ company.url }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="empty">No data available</div>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">RA</span>
+                <div>
+                    <h2 class="card-title">Recent Alerts</h2>
+                    <p class="card-kicker">Most recent detected alert records</p>
+                </div>
+            </div>
+
+            {% if alerts %}
+            <ul class="item-list">
+                {% for alert in alerts[:8] %}
+                <li class="item">
+                    <span class="item-title">{{ alert.message }}</span>
+                    <span class="item-meta">{{ alert.alert_type }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="empty">No data available</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="loading" class="loading-panel">
+        <div class="loading-row">
+            <div class="spinner"></div>
+            <div>
+                <p class="loading-title">Analyzing company</p>
+                <p id="loadingMessage" class="loading-message">Crawling company website...</p>
+            </div>
+        </div>
+        <div class="progress-track">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+    </div>
+
+    <div id="results"></div>
+</div>
+
+<script>
+const loadingMessages = [
+    "Crawling company website...",
+    "Discovering competitors...",
+    "Detecting leadership...",
+    "Analyzing hiring signals...",
+    "Gathering news...",
+    "Generating executive briefing..."
+];
+
+let loadingTimer = null;
+
+function escapeHtml(value){
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function hasItems(items){
+    return Array.isArray(items) && items.length > 0;
+}
+
+function startLoading(){
+    const loading = document.getElementById("loading");
+    const message = document.getElementById("loadingMessage");
+    const progress = document.getElementById("progressBar");
+    const button = document.getElementById("analyzeButton");
+    let index = 0;
+
+    loading.style.display = "block";
+    button.disabled = true;
+    message.textContent = loadingMessages[0];
+    progress.style.width = "8%";
+
+    loadingTimer = setInterval(() => {
+        index = Math.min(index + 1, loadingMessages.length - 1);
+        message.textContent = loadingMessages[index];
+        progress.style.width = `${Math.min(96, 8 + index * 17)}%`;
+
+        if(index === loadingMessages.length - 1){
+            clearInterval(loadingTimer);
+            loadingTimer = null;
+        }
+    }, 1800);
+}
+
+function stopLoading(){
+    const loading = document.getElementById("loading");
+    const progress = document.getElementById("progressBar");
+    const button = document.getElementById("analyzeButton");
+
+    if(loadingTimer){
+        clearInterval(loadingTimer);
+        loadingTimer = null;
+    }
+
+    progress.style.width = "100%";
+    loading.style.display = "none";
+    button.disabled = false;
+}
+
+function emptyState(){
+    return `<div class="empty">No data available</div>`;
+}
+
+function card(title, icon, content, extraClass = ""){
+    return `
+        <section class="card ${extraClass}">
+            <div class="card-header">
+                <span class="card-icon">${escapeHtml(icon)}</span>
+                <div>
+                    <h2 class="card-title">${escapeHtml(title)}</h2>
+                    <p class="card-kicker">Live backend data</p>
+                </div>
+            </div>
+            ${content || emptyState()}
+        </section>
+    `;
+}
+
+function listItems(items, render){
+    if(!hasItems(items)){
+        return emptyState();
+    }
+
+    return `
+        <ul class="item-list">
+            ${items.map(render).join("")}
+        </ul>
+    `;
+}
+
+function textBlock(value){
+    const clean = String(value || "").trim();
+
+    if(!clean){
+        return emptyState();
+    }
+
+    return `<div class="brief-body">${escapeHtml(clean)}</div>`;
+}
+
+function formatOverview(data){
+    return `
+        <div class="overview-list">
+            <div>
+                <span class="field-label">Name</span>
+                <div class="field-value">${escapeHtml(data.company_name || data.context_graph?.title || "Unknown")}</div>
+            </div>
+            <div>
+                <span class="field-label">Website</span>
+                <div class="field-value">${escapeHtml(data.context_graph?.website || "No data available")}</div>
+            </div>
+            <div>
+                <span class="field-label">Description</span>
+                <div class="field-value">${escapeHtml(data.context_graph?.description || "No data available")}</div>
+            </div>
+        </div>
+    `;
+}
+
+function formatTechStack(techStack){
+    const values = [];
+    const seen = new Set();
+
+    (techStack || []).forEach(snapshot => {
+        (snapshot.technologies || []).forEach(tech => {
+            const value = String(tech?.value || "").trim();
+            const key = value.toLowerCase();
+
+            if(value && !seen.has(key)){
+                seen.add(key);
+                values.push(value);
+            }
+        });
+    });
+
+    if(values.length === 0){
+        return emptyState();
+    }
+
+    return `
+        <div class="tech-list">
+            ${values.slice(0, 24).map(value => `<span class="tech-chip">${escapeHtml(value)}</span>`).join("")}
+        </div>
+    `;
+}
+
+function hostFromUrl(value){
+    try{
+        return new URL(value).hostname.replace("www.", "");
+    } catch(_error) {
+        return "";
+    }
+}
+
+function companyKeys(data){
+    const name = String(data.company_name || "").toLowerCase();
+    const host = hostFromUrl(data.context_graph?.website || "").split(".")[0].toLowerCase();
+    return [name, host].filter(value => value && value !== "unknown");
+}
+
+function relatedToCompany(record, keys){
+    const text = [
+        record.platform,
+        record.post_text,
+        record.title,
+        record.source,
+        record.url
+    ].join(" ").toLowerCase();
+
+    return keys.length === 0 || keys.some(key => text.includes(key));
+}
+
+function formatSocialSignals(socialPosts, companyData){
+    const keys = companyKeys(companyData);
+    const rows = (socialPosts || [])
+        .filter(post => relatedToCompany(post, keys))
+        .slice(0, 10);
+
+    if(rows.length === 0){
+        return emptyState();
+    }
+
+    return `
+        <div class="table-wrap">
+            <table class="signal-table">
+                <thead>
+                    <tr>
+                        <th>Platform</th>
+                        <th>Preview Text</th>
+                        <th>Source Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rows.map(post => `
+                        <tr>
+                            <td>${escapeHtml(post.platform || "Unknown")}</td>
+                            <td>${escapeHtml(post.post_text || "No data available")}</td>
+                            <td><a href="${escapeHtml(post.url || "#")}" target="_blank" rel="noopener">${escapeHtml(hostFromUrl(post.url) || "Open")}</a></td>
+                        </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+function formatBrandMentions(brandMentions, companyData){
+    const keys = companyKeys(companyData);
+    const rows = (brandMentions || [])
+        .filter(mention => relatedToCompany(mention, keys))
+        .slice(0, 10);
+
+    return listItems(
+        rows,
+        mention => `
+            <li class="item">
+                <a class="item-title" href="${escapeHtml(mention.url || "#")}" target="_blank" rel="noopener">${escapeHtml(mention.title || "Untitled mention")}</a>
+                <span class="item-meta">${escapeHtml(mention.source || "Unknown source")}</span>
+            </li>
+        `
+    );
+}
+
+function optionalCard(title, icon, items, content){
+    if(!hasItems(items)){
+        return "";
+    }
+
+    return card(title, icon, content);
+}
+
+async function fetchJson(url){
+    const response = await fetch(url);
+
+    if(!response.ok){
+        throw new Error("Dashboard request failed");
+    }
+
+    return response.json();
+}
+
+async function analyzeCompany(){
+    let url = document.getElementById("companyUrl").value.trim();
+
+    if(!url){
+        document.getElementById("results").innerHTML =
+            card("Analysis Error", "ER", `<div class="empty">Enter a company website to analyze.</div>`, "error");
+        return;
+    }
+
+    if(!url.startsWith("http://") && !url.startsWith("https://")){
+        url = "https://" + url;
+    }
+
+    document.getElementById("results").innerHTML = "";
+    startLoading();
+
+    try{
+        const response = await fetch(
+            "/analyze-company",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    url:url
+                })
+            }
+        );
+
+        if(!response.ok){
+            throw new Error("Analysis request failed");
+        }
+
+        const data = await response.json();
+        const companyId = data.company_id;
+
+        if(!companyId){
+            stopLoading();
+            document.getElementById("results").innerHTML =
+                card(
+                    "Analysis Failed",
+                    "ER",
+                    `<div class="empty">${escapeHtml(data.summary || data.context_graph?.description || "No data available")}</div>`,
+                    "error"
+                );
+            return;
+        }
+
+        const [
+            jobs,
+            news,
+            alerts,
+            personnel,
+            competitors,
+            briefings,
+            techStack,
+            reviews,
+            wikipedia,
+            socialPosts,
+            brandMentions,
+            adCreatives
+        ] = await Promise.all([
+            fetchJson(`/jobs/${companyId}`),
+            fetchJson(`/news/${companyId}`),
+            fetchJson(`/alerts/${companyId}`),
+            fetchJson(`/personnel/${companyId}`),
+            fetchJson(`/competitors/${companyId}`),
+            fetchJson(`/briefings/${companyId}`),
+            fetchJson(`/technology-stack/${companyId}`),
+            fetchJson(`/reviews/${companyId}`),
+            fetchJson(`/wikipedia/${companyId}`),
+            fetchJson(`/social-posts/${companyId}`),
+            fetchJson(`/brand-mentions/${companyId}`),
+            fetchJson(`/ad-creatives/${companyId}`)
+        ]);
+
+        const latestBrief =
+            briefings && briefings.length
+            ? briefings[briefings.length - 1]
+            : null;
+
+        const brief = latestBrief?.briefing_md || data.brief;
+
+        stopLoading();
+
+        document.getElementById("results").innerHTML = `
+            <div class="dashboard-grid">
+                ${card("Company Overview", "CO", formatOverview(data), "hero-card")}
+                ${card("Executive Brief", "EB", textBlock(brief), "hero-card")}
+
+                ${card("Alerts", "AL", listItems(
+                    alerts,
+                    alert => `
+                        <li class="item">
+                            <span class="item-title">${escapeHtml(alert.message)}</span>
+                            <span class="item-meta">${escapeHtml(alert.alert_type || "Alert")}</span>
+                        </li>
+                    `
+                ), "span-2")}
+
+                ${card("Competitors", "CP", listItems(
+                    competitors,
+                    competitor => `
+                        <li class="item">
+                            <span class="item-title">${escapeHtml(competitor.competitor_name)}</span>
+                        </li>
+                    `
+                ))}
+
+                ${card("Leadership", "LD", listItems(
+                    personnel,
+                    person => `
+                        <li class="item">
+                            <span class="item-title">${escapeHtml(person.name)}</span>
+                            <span class="item-meta">${escapeHtml(person.title || person.role || "No data available")}</span>
+                        </li>
+                    `
+                ))}
+
+                ${card("Jobs", "JB", listItems(
+                    jobs,
+                    job => `
+                        <li class="item">
+                            <span class="item-title">${escapeHtml(job.title)}</span>
+                            <span class="item-meta">${escapeHtml(job.location || job.department || "No data available")}</span>
+                        </li>
+                    `
+                ))}
+
+                ${card("News", "NW", listItems(
+                    news,
+                    article => `
+                        <li class="item">
+                            <a class="item-title" href="${escapeHtml(article.url || "#")}" target="_blank" rel="noopener">${escapeHtml(article.title)}</a>
+                            <span class="item-meta">${escapeHtml(article.published_at || article.source_type || "No data available")}</span>
+                        </li>
+                    `
+                ))}
+
+                ${card("Technology Stack", "TS", formatTechStack(techStack))}
+
+                ${card("Wikipedia", "WK", listItems(
+                    wikipedia,
+                    page => `
+                        <li class="item">
+                            <a class="item-title" href="${escapeHtml(page.url || "#")}" target="_blank" rel="noopener">${escapeHtml(page.page_title || "Wikipedia")}</a>
+                            <span class="item-meta">${escapeHtml(page.summary || "No data available")}</span>
+                        </li>
+                    `
+                ))}
+
+                ${card("Social Signals", "SS", formatSocialSignals(socialPosts, data))}
+
+                ${card("Brand Mentions", "BM", formatBrandMentions(brandMentions, data))}
+
+                ${optionalCard("Reviews", "RV", reviews, listItems(
+                    reviews,
+                    review => `
+                        <li class="item">
+                            <span class="item-title">${escapeHtml(review.source || "Review")}</span>
+                            <span class="item-meta">${escapeHtml(review.review_text || review.rating || "No data available")}</span>
+                        </li>
+                    `
+                ))}
+
+                ${optionalCard("Ad Creatives", "AD", adCreatives, listItems(
+                    adCreatives,
+                    ad => `
+                        <li class="item">
+                            <span class="item-title">${escapeHtml(ad.platform || "Ad")}</span>
+                            <span class="item-meta">${escapeHtml(ad.ad_text || "No data available")}</span>
+                        </li>
+                    `
+                ))}
+            </div>
+        `;
+
+    } catch(_error) {
+        stopLoading();
+        document.getElementById("results").innerHTML =
+            card(
+                "Analysis Error",
+                "ER",
+                `<div class="empty">The dashboard could not complete the analysis. Please try again.</div>`,
+                "error"
+            );
+    }
+}
+</script>
+ </body>
+</html>
