@@ -51,8 +51,8 @@ def home(request: Request):
         )
 
         return templates.TemplateResponse(
-            "index.html",
-            {
+            name="index.html",
+            context={
                 "request": request,
                 "companies": companies,
                 "alerts": alerts
@@ -62,8 +62,8 @@ def home(request: Request):
     except Exception:
         logger.exception("Homepage render failed")
         return templates.TemplateResponse(
-            "index.html",
-            {
+            name="index.html",
+            context={
                 "request": request,
                 "companies": [],
                 "alerts": []
