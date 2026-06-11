@@ -31,8 +31,47 @@ templates = Jinja2Templates(
 
 
 @app.get("/", response_class=HTMLResponse)
-def home():
-    return HTMLResponse("<h1>WATCHDOG LIVE</h1>")
+def home(request: Request):
+
+    db = SessionLocal()
+
+    try:
+
+        companies = (
+            db.query(Company)
+            .order_by(Company.id.desc())
+            .all()
+        )
+
+        alerts = (
+            db.query(Alert)
+            .order_by(Alert.id.desc())
+            .limit(20)
+            .all()
+        )
+
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "companies": companies,
+                "alerts": alerts
+            }
+        )
+
+    except Exception:
+        logger.exception("Homepage render failed")
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "companies": [],
+                "alerts": []
+            }
+        )
+
+    finally:
+        db.close()
 
 
 @app.get("/health")
