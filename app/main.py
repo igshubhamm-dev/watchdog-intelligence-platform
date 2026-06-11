@@ -1,3 +1,6 @@
+import logging
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -9,6 +12,10 @@ from app.models.alert import Alert
 from app.api.company_routes import router as company_router
 from app.api.dashboard_routes import router as dashboard_router
 
+logger = logging.getLogger(__name__)
+BASE_DIR = Path(__file__).resolve().parent
+TEMPLATE_DIR = BASE_DIR / "templates"
+
 app = FastAPI(
     title="WATCHDOG",
     description="Competitor Intelligence Agent",
@@ -19,7 +26,7 @@ app.include_router(company_router)
 app.include_router(dashboard_router)
 
 templates = Jinja2Templates(
-    directory="app/templates"
+    directory=str(TEMPLATE_DIR)
 )
 
 
@@ -49,6 +56,17 @@ def home(request: Request):
                 "request": request,
                 "companies": companies,
                 "alerts": alerts
+            }
+        )
+
+    except Exception:
+        logger.exception("Homepage render failed")
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "companies": [],
+                "alerts": []
             }
         )
 
